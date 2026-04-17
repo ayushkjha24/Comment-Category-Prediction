@@ -1,117 +1,171 @@
-# 📄 Comment Category Prediction using Machine Learning
+# 📄 Comment Category Prediction
 
 ---
 
-## **1. Abstract**
+## ## Project Overview
 
-With the rapid growth of online platforms, large volumes of user-generated comments are produced daily. Manually categorizing these comments is inefficient and impractical. This project focuses on building a machine learning-based system to automatically classify comments into predefined categories.
-
-Various models including Logistic Regression, Support Vector Machine (SVM), and Naive Bayes were implemented. Text preprocessing techniques such as tokenization and TF-IDF vectorization were applied. The models were evaluated using the F1-macro score, where the best-performing model achieved a score of **0.8143**, indicating strong performance across multiple classes.
-
----
-
-## **2. Introduction**
-
-Text classification is a fundamental task in **Natural Language Processing (NLP)**. It is widely used in:
-
-- Sentiment analysis  
-- Spam detection  
-- Content moderation  
-- Customer feedback analysis  
+This project aims to build a machine learning model to predict comment categories using both **text data** and **metadata features**.
 
 ### **Problem Statement**
-
-To develop a system that can automatically predict the category of a given comment with high accuracy and balanced performance across all classes.
-
----
-
-## **3. Objectives**
-
-- To preprocess textual data effectively  
-- To convert text into numerical features using TF-IDF  
-- To train multiple ML models for classification  
-- To perform hyperparameter tuning for optimization  
-- To evaluate models using appropriate metrics  
+- **Task**: Predict category of social media comments  
+- **Input**: Text comments + engagement/demographic features  
+- **Output**: Category label (0, 1, 2, 3)  
+- **Evaluation Metric**: **F1-Macro Score** (due to class imbalance)
 
 ---
 
-## **4. Dataset Description**
+## ## Approach
 
-- **Source:** Kaggle dataset  
-- **Type:** Text dataset containing user comments and corresponding categories  
-
-### **Features:**
-- `comment_text` (input text)  
-- `category` (target label)  
-
-### **Challenges:**
-- Noisy data (punctuation, stopwords)  
-- Class imbalance  
-- High dimensionality  
+1. Exploratory Data Analysis (EDA)  
+2. Data Preprocessing & Feature Engineering  
+3. Text Feature Extraction (TF-IDF)  
+4. Feature Selection  
+5. Model Building & Comparison  
+6. Hyperparameter Tuning  
+7. Final Model Training  
+8. Prediction Generation  
 
 ---
 
-## **5. Methodology**
+## ## 1. Data Loading
 
-### **5.1 Data Preprocessing**
+Datasets used:
+- Training dataset  
+- Test dataset  
+- Sample submission  
+
+---
+
+## ## 2. Exploratory Data Analysis (EDA)
+
+### ### 2.1 Dataset Overview
+- Checked dataset shape, structure, and data types  
+
+---
+
+### ### 2.2 Missing Values Analysis
+- Identified missing values in train and test datasets  
+- Ensured proper handling before modeling  
+
+---
+
+### ### 2.3 Feature Cardinality
+
+- High cardinality columns identified:
+  - `created_date` (very high unique values)
+  - `comment` (text data)
+
+**Decision:**
+- Drop or transform high-cardinality features  
+- Apply vectorization on text  
+
+---
+
+### ### 2.4 Feature Summary
+
+#### Numerical Features
+- Statistical summary using `.describe()`
+
+#### Categorical Features
+- Unique value counts per column  
+
+---
+
+### ### 2.5 Target Distribution Analysis
+
+⚠️ **Critical Observation: Dataset is Highly Imbalanced**
+
+- Class 0 → ~57% (majority)  
+- Class 3 → ~2.7% (minority)  
+
+### **Design Decisions**
+- Use `class_weight = 'balanced'`  
+- Use **F1-Macro instead of Accuracy**  
+
+---
+
+### ### 2.6 Outlier Detection
+- Used IQR method  
+- Handled later using transformations  
+
+---
+
+### ### 2.7 Feature Correlation
+
+- Identified most important numerical features  
+- Example:
+  - `if_2` → highest correlation  
+  - `upvote`, `downvote` → moderate impact  
+
+💡 Insight:  
+Text features contribute more than metadata  
+
+---
+
+## ## 3. Data Preprocessing
 
 - Lowercasing text  
-- Removing punctuation and special characters  
-- Tokenization  
-- Stopword removal  
+- Removing special characters  
+- Handling missing values  
+- Encoding categorical variables  
 
 ---
 
-### **5.2 Feature Extraction**
+## ## 4. Feature Engineering
 
-**TF-IDF (Term Frequency–Inverse Document Frequency)**
+### ### 4.1 TF-IDF Vectorization
 
-- Converts text into numerical vectors  
-- Assigns importance to words based on frequency  
+- Converts text into numerical representation  
+- Captures importance of words  
 
 ---
 
-### **5.3 Model Building**
+### ### 4.2 Feature Combination
 
-#### **Logistic Regression**
-- Works well for linear classification  
-- Efficient and interpretable  
+- Combined:
+  - TF-IDF features (text)  
+  - Numerical features  
+  - Encoded categorical features  
 
-#### **Support Vector Machine (SVM)**
+---
+
+## ## 5. Model Building
+
+Models used:
+
+### ### 5.1 Logistic Regression
+- Baseline linear model  
+- Works well with sparse data  
+
+---
+
+### ### 5.2 Support Vector Machine (SVM)
 - Effective in high-dimensional space  
-- Uses hyperplanes for classification  
-
-#### **Naive Bayes**
-- Based on probability  
-- Fast and performs well on text data  
+- Good for text classification  
 
 ---
 
-### **5.4 Hyperparameter Tuning**
-
-- Grid Search / Randomized Search  
-- Cross-validation  
-
-**Example Parameters:**
-- Logistic Regression → `C`, `penalty`  
-- SVM → `kernel`, `C`  
-- Naive Bayes → `alpha`  
+### ### 5.3 Naive Bayes
+- Probabilistic model  
+- Very effective for NLP tasks  
 
 ---
 
-## **6. Evaluation Metrics**
+## ## 6. Model Evaluation
 
-### **F1 Score (Macro)**
-
-Balances precision and recall and is suitable for imbalanced datasets.
+### **Metric Used: F1-Macro**
 
 $$
 F1 = 2 \cdot \frac{Precision \cdot Recall}{Precision + Recall}
 $$
 
+### **Why F1-Macro?**
+- Handles class imbalance  
+- Treats all classes equally  
+
 ---
 
-## **7. Results and Analysis**
+## ## 7. Results
 
 | Model                | Performance |
 |---------------------|------------|
@@ -119,79 +173,67 @@ $$
 | SVM                 | Better     |
 | Naive Bayes         | **Best**   |
 
-- **Best F1-macro score:** 0.8143  
-- Naive Bayes performed best due to its effectiveness in handling text data  
-
-### **Observations**
-- TF-IDF significantly improved performance  
-- Hyperparameter tuning boosted results  
-- Simpler models can outperform complex ones in NLP  
+- **Best Score**: 0.8143 (F1-Macro)  
 
 ---
 
-## **8. System Architecture**
+## ## 8. Key Insights
 
-**Workflow:**
+- Text features dominate prediction performance  
+- Metadata features provide minor improvements  
+- TF-IDF is highly effective  
+- Naive Bayes outperforms due to text distribution  
+
+---
+
+## ## 9. Final Pipeline
 
 1. Input comment  
 2. Preprocessing  
-3. TF-IDF vectorization  
-4. Model prediction  
-5. Output category  
+3. TF-IDF transformation  
+4. Feature combination  
+5. Model prediction  
+6. Output category  
 
 ---
 
-## **9. Advantages**
+## ## 10. Advantages
 
-- Fast and efficient  
-- Scalable  
-- Works well with real-world text  
+- Efficient on large datasets  
+- Works well with sparse data  
+- Scalable solution  
 
 ---
 
-## **10. Limitations**
+## ## 11. Limitations
 
-- Difficulty handling sarcasm and context  
-- Dependent on preprocessing quality  
+- Cannot understand deep context  
+- Struggles with sarcasm  
 - Limited semantic understanding  
 
 ---
 
-## **11. Future Work**
+## ## 12. Future Work
 
-- Deep learning models (LSTM, BERT)  
-- Word embeddings (Word2Vec, GloVe)  
-- Better context handling  
-- Web deployment  
-
----
-
-## **12. Applications**
-
-- Social media moderation  
-- Spam filtering  
-- Customer feedback analysis  
-- Chatbot systems  
+- Use deep learning models (LSTM, BERT)  
+- Use embeddings (Word2Vec, GloVe)  
+- Improve feature engineering  
+- Deploy as web application  
 
 ---
 
-## **13. Conclusion**
+## ## 13. Conclusion
 
-This project demonstrates the effectiveness of machine learning for text classification. By applying TF-IDF and training multiple models, a strong F1-macro score of **0.8143** was achieved. The results show that even simple models like Naive Bayes can perform exceptionally well with proper preprocessing and feature engineering.
+This project successfully builds a robust text classification system using machine learning. By combining TF-IDF features with metadata and applying multiple models, the system achieves a strong **F1-Macro score of 0.8143**.
+
+The results highlight that **simple models like Naive Bayes can outperform complex ones when paired with proper preprocessing and feature engineering**.
 
 ---
 
-## **14. References**
+## ## 14. References
 
 - Kaggle Dataset  
 - Scikit-learn Documentation  
-- NLP research papers  
+- NLP Research Papers  
 
 ---
-
-## 🚀 Optional Add-ons
-
-- Add model comparison graphs  
-- Deploy using Flask  
-- Convert to LaTeX (IEEE format)  
-- Create PPT for viva  
